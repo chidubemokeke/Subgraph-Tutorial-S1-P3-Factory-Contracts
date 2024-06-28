@@ -1,1 +1,1 @@
-# Subgraph-Masterclass-Intermediate
+# Subgraph-Masterclass-Beginner-DEX
