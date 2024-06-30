@@ -4,21 +4,27 @@ schema:
 dataSources:
   - kind: ethereum
     name: UniswapFactory
-    network: mainnet
+    network: base
     source:
-      address: "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95"
+      address: "0x33128a8fC17869897dcE68Ed026d694621f6FDfD"
       abi: UniswapFactory
-      startBlock: 18370092
+      startBlock: 15427821
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - NewExchange
+        - FeeAmountEnabled
+        - OwnerChanged
+        - PoolCreated
       abis:
         - name: UniswapFactory
           file: ./abis/UniswapFactory.json
       eventHandlers:
-        - event: NewExchange(indexed address,indexed address)
-          handler: handleNewExchange
+        - event: FeeAmountEnabled(indexed uint24,indexed int24)
+          handler: handleFeeAmountEnabled
+        - event: OwnerChanged(indexed address,indexed address)
+          handler: handleOwnerChanged
+        - event: PoolCreated(indexed address,indexed address,indexed uint24,int24,address)
+          handler: handlePoolCreated
       file: ./src/uniswap-factory.ts

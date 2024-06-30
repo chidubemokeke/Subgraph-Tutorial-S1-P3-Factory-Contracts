@@ -1,8 +1,8 @@
 {
-  "mainnet": {
+  "base": {
     "UniswapFactory": {
-      "address": "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95",
-      "startBlock": 18370092
+      "address": "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
+      "startBlock": 15427821
     }
   }
 }
