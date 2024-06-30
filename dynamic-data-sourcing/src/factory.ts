@@ -1,55 +1,18 @@
-import {
-  FeeAmountEnabled as FeeAmountEnabledEvent,
-  OwnerChanged as OwnerChangedEvent,
-  PoolCreated as PoolCreatedEvent
-} from "../generated/Factory/Factory"
-import {
-  FeeAmountEnabled,
-  OwnerChanged,
-  PoolCreated
-} from "../generated/schema"
+import { PoolCreated } from "../generated/Factory/Factory";
+import { PoolTemplate } from "../generated/templates";
+import { Pool } from "../generated/schema";
 
-export function handleFeeAmountEnabled(event: FeeAmountEnabledEvent): void {
-  let entity = new FeeAmountEnabled(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.fee = event.params.fee
-  entity.tickSpacing = event.params.tickSpacing
+export function handlePoolCreated(event: PoolCreated): void {
+  // Create and save the Pool entity
+  let pool = new Pool(event.params.pool.toHex());
+  pool.token0 = event.params.token0;
+  pool.token1 = event.params.token1;
+  pool.fee = event.params.fee;
+  pool.tickSpacing = event.params.tickSpacing;
+  pool.poolAddress = event.params.pool;
+  pool.createdAtTimestamp = event.block.timestamp;
+  pool.save();
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handleOwnerChanged(event: OwnerChangedEvent): void {
-  let entity = new OwnerChanged(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.oldOwner = event.params.oldOwner
-  entity.newOwner = event.params.newOwner
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-}
-
-export function handlePoolCreated(event: PoolCreatedEvent): void {
-  let entity = new PoolCreated(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.token0 = event.params.token0
-  entity.token1 = event.params.token1
-  entity.fee = event.params.fee
-  entity.tickSpacing = event.params.tickSpacing
-  entity.pool = event.params.pool
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  // Dynamically create a new data source for the pool contract
+  PoolTemplate.create(event.params.pool.toHex());
 }

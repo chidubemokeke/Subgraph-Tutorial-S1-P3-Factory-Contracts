@@ -1,0 +1,8 @@
+type NewExchange @entity(immutable: true) {
+  id: Bytes!
+  token: Bytes! # address
+  exchange: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
