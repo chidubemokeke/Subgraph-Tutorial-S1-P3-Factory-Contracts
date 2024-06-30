@@ -1,31 +1,8 @@
-type Factory @entity {
-  id: ID!
-  ownerChangedEvents: [OwnerChangedEvent!]! @derivedFrom(field: "factory")
-  feeAmountEnabledEvents: [FeeAmountEnabledEvent!]!
-    @derivedFrom(field: "factory")
-  poolCreatedEvents: [PoolCreatedEvent!]! @derivedFrom(field: "factory")
-}
-
-type OwnerChangedEvent @entity {
-  id: ID!
-  factory: Factory!
-  oldOwner: Bytes!
-  newOwner: Bytes!
-}
-
-type FeeAmountEnabledEvent @entity {
-  id: ID!
-  factory: Factory!
-  fee: Int!
-  tickSpacing: Int!
-}
-
-type PoolCreatedEvent @entity {
-  id: ID!
-  factory: Factory!
-  token0: Bytes!
-  token1: Bytes!
-  fee: Int!
-  tickSpacing: Int!
-  pool: Bytes!
+type NewExchange @entity(immutable: true) {
+  id: Bytes!
+  token: Bytes! # address
+  exchange: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }
