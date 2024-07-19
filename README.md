@@ -1,1 +1,1 @@
-# Subgraph-Masterclass-Beginner-DEX
+# Subgraph-Tutorial-Beginner-Factory Contracts
