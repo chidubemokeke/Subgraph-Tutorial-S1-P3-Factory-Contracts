@@ -1,12 +1,11 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import { Pool, Swap, Mint, Burn } from "../../generated/schema";
 import {
-  PoolCreated as PoolCreatedEvent,
   Swap as SwapEvent,
   Mint as MintEvent,
   Burn as BurnEvent,
 } from "../../generated/schema";
-import { updatePoolTotalLiquidity } from "./logic";
+import { createPoolEntity, updatePoolTotalLiquidity } from "./logic";
 
 export function handleMint(event: MintEvent): void {
   let poolId = event.pool;
@@ -35,7 +34,7 @@ export function handleMint(event: MintEvent): void {
 }
 
 export function handleSwap(event: SwapEvent): void {
-  let poolId = event.pool;
+  let poolId = event.pool; // Adjust if needed to get the pool ID
   let pool = Pool.load(poolId);
 
   if (!pool) {
@@ -61,7 +60,7 @@ export function handleSwap(event: SwapEvent): void {
 }
 
 export function handleBurn(event: BurnEvent): void {
-  let poolId = event.pool;
+  let poolId = event.pool; // Adjust if needed to get the pool ID
   let pool = Pool.load(poolId);
 
   if (!pool) {

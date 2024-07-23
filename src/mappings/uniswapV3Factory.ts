@@ -1,5 +1,5 @@
 import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
-import { PoolCreated, Pool } from "../../generated/schema";
+import { Pool } from "../../generated/schema";
 import { PoolCreated as PoolCreatedEvent } from "../../generated/schema";
 import { UniswapV3Pool } from "../../generated/templates";
 import { createPoolEntity } from "../helpers/logic";
@@ -14,7 +14,7 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
     createPoolEntity(poolId); // Initialize the Pool entity
 
     // Create a new instance of the pool template
-    UniswapV3Pool.create(event.pool); // This line creates a new instance for tracking
+    UniswapV3Pool.create(Address.fromBytes(event.pool)); // This line creates a new instance for tracking
 
     // Reload the pool entity after creation
     pool = Pool.load(poolId);
