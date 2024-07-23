@@ -5,7 +5,7 @@ import {
   Mint as MintEvent, // Import the Mint event schema to handle Mint events.
   Burn as BurnEvent, // Import the Burn event schema to handle Burn events.
 } from "../../generated/schema"; // Import these event schemas from the generated schema file.
-import { createPoolEntity, updatePoolTotalLiquidity } from "./logic"; // Import utility functions for creating Pool entities and updating pool liquidity.
+import { updatePoolTotalLiquidity } from "./logic"; // Import utility functions for creating Pool entities and updating pool liquidity.
 
 // Event handler function for Mint events
 export function handleMint(event: MintEvent): void {
