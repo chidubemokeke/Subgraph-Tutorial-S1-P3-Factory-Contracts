@@ -1,17 +1,17 @@
 {
-  "name": "dynamic-data-sourcing",
+  "name": "factory-contracts",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ dynamic-data-sourcing",
-    "create-local": "graph create --node http://localhost:8020/ dynamic-data-sourcing",
-    "remove-local": "graph remove --node http://localhost:8020/ dynamic-data-sourcing",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 dynamic-data-sourcing",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ factory-contracts",
+    "create-local": "graph create --node http://localhost:8020/ factory-contracts",
+    "remove-local": "graph remove --node http://localhost:8020/ factory-contracts",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 factory-contracts",
     "test": "graph test"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.64.1",
+    "@graphprotocol/graph-cli": "0.79.0",
     "@graphprotocol/graph-ts": "0.32.0"
   },
   "devDependencies": { "matchstick-as": "0.5.0" }

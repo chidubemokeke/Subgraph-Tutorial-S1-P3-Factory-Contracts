@@ -1,8 +1,0 @@
-{
-  "base": {
-    "UniswapV3Factory": {
-      "address": "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
-      "startBlock": 15427821
-    }
-  }
-}

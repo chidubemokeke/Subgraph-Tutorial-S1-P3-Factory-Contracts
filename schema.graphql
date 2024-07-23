@@ -1,79 +1,73 @@
-type Swap @entity {
-  # Unique ID: transaction hash + "#" + index in swaps Transaction array
-  id: ID!
-  # Pointer to the transaction entity
-  transaction: Transaction!
-  # Timestamp of the transaction
-  timestamp: BigInt!
-  # Pool where the swap occurred
-  pool: Pool!
-  # Token0 involved in the swap
-  token0: Token!
-  # Token1 involved in the swap
-  token1: Token!
-  # Sender of the swap
-  sender: Bytes!
-  # Recipient of the swap
-  recipient: Bytes!
-  # Origin of the transaction (EOA that initiated the txn)
-  origin: Bytes!
-  # Delta of token0 swapped
-  amount0: BigDecimal!
-  # Delta of token1 swapped
-  amount1: BigDecimal!
-  # Price of token0 in terms of token1 at the time of swap
-  price0: BigDecimal! @derivedFrom(fields: ["amount0", "amount1"])
-  # Price of token1 in terms of token0 at the time of swap
-  price1: BigDecimal! @derivedFrom(fields: ["amount1", "amount0"])
-}
-
-type Transaction @entity {
-  # Unique ID for the transaction
-  id: ID!
-  # Array of swaps in the transaction
-  swaps: [Swap!]! @derivedFrom(field: "transaction")
-  # Timestamp of the transaction
-  timestamp: BigInt!
-  # Origin of the transaction (EOA that initiated the txn)
-  origin: Bytes!
+# Represents a newly created liquidity pool with initial details
+type PoolCreated @entity(immutable: true) {
+  id: Bytes! # Unique identifier for the PoolCreated event, often the transaction hash or a combination of event parameters
+  token0: Bytes! # Address of the first token in the pool
+  token1: Bytes! # Address of the second token in the pool
+  fee: Int! # Fee tier for the liquidity pool (e.g., 500 for 0.05%)
+  tickSpacing: Int! # Spacing between ticks in the pool, influences price granularity
+  pool: Bytes! # Address of the newly created pool contract
+  blockNumber: BigInt! # Block number where the PoolCreated event was emitted
+  blockTimestamp: BigInt! # Timestamp of the block where the event was emitted
+  transactionHash: Bytes! # Transaction hash where the PoolCreated event was logged
 }
 
 type Pool @entity {
-  # Unique ID for the pool
-  id: ID!
-  # Token0 in the pool
-  token0: Token!
-  # Token1 in the pool
-  token1: Token!
-  # Array of swaps that occurred in the pool
-  swaps: [Swap!]! @derivedFrom(field: "pool")
-  # Total liquidity of token0 in the pool
-  totalLiquidityToken0: BigDecimal!
-  # Total liquidity of token1 in the pool
-  totalLiquidityToken1: BigDecimal!
-  # Total volume of token0 traded in the pool
-  totalVolumeToken0: BigDecimal!
-  # Total volume of token1 traded in the pool
-  totalVolumeToken1: BigDecimal!
-  # Timestamp of the last swap in the pool
-  lastSwapTimestamp: BigInt!
+  id: ID! # Unique identifier for the pool (address)
+  token0: Bytes! # Address of the first token in the pool
+  token1: Bytes! # Address of the second token in the pool
+  fee: Int # Fee tier for the pool
+  tickSpacing: Int # Tick spacing for the pool
+  totalLiquidity: BigInt # Total liquidity in the pool
+  totalLiquidityIn: BigInt # Total liquidity added to the pool
+  totalLiquidityOut: BigInt # Total liquidity removed from the pool
+  averageLiquidityIn: BigInt # Average liquidity added to the pool
+  averageLiquidityOut: BigInt # Average liquidity removed from the pool
+  mintCount: Int # Number of mint events
+  burnCount: Int # Number of burn events
+  blockNumber: BigInt!
+  timeStamp: BigInt!
+  transactionHash: Bytes!
+  swaps: [Swap!]! @derivedFrom(field: "pool") # List of swaps involving this pool
+  mints: [Mint!]! @derivedFrom(field: "pool") # List of mints involving this pool
+  burns: [Burn!]! @derivedFrom(field: "pool") # List of burns involving this pool
 }
 
-type Token @entity {
-  # Unique ID for the token
-  id: ID!
-  # Symbol of the token
-  symbol: String!
-  # Name of the token
-  name: String!
-  # Decimals of the token
-  decimals: Int!
-  # Array of swaps involving this token as token0
-  swapsAsToken0: [Swap!]! @derivedFrom(field: "token0")
-  # Array of swaps involving this token as token1
-  swapsAsToken1: [Swap!]! @derivedFrom(field: "token1")
-  # Total volume of the token traded
-  totalVolume: BigDecimal!
-  # Total liquidity of the token
-  totalLiquidity: BigDecimal!
+# Entity to track swap events
+type Swap @entity {
+  id: ID! # Unique identifier for the swap (event hash + log index)
+  pool: Pool! # Reference to the pool where the swap occurred
+  sender: Bytes! # Address of the sender
+  recipient: Bytes! # Address of the recipient
+  amount0In: BigInt # Amount of token0 sent to the pool
+  amount1In: BigInt # Amount of token1 sent to the pool
+  amount0Out: BigInt # Amount of token0 sent from the pool
+  amount1Out: BigInt # Amount of token1 sent from the pool
+  timestamp: BigInt # Timestamp of the swap event
+}
+
+# Entity to track mint events
+type Mint @entity {
+  id: ID! # Unique identifier for the mint event (event hash + log index)
+  pool: Pool! # Reference to the pool where the mint occurred
+  sender: Bytes! # Address of the sender
+  recipient: Bytes! # Address of the recipient
+  tickLower: Int! # Lower tick of the minted position
+  tickUpper: Int! # Upper tick of the minted position
+  amount: BigInt # Amount of liquidity minted
+  amount0: BigInt # Amount of token0 deposited
+  amount1: BigInt # Amount of token1 deposited
+  timestamp: BigInt # Timestamp of the mint event
+}
+
+# Entity to track burn events
+type Burn @entity {
+  id: ID! # Unique identifier for the burn event (event hash + log index)
+  pool: Pool! # Reference to the pool where the burn occurred
+  sender: Bytes! # Address of the sender
+  tickLower: Int! # Lower tick of the burned position
+  tickUpper: Int! # Upper tick of the burned position
+  amount: BigInt # Amount of liquidity burned
+  amount0: BigInt # Amount of token0 withdrawn
+  amount1: BigInt # Amount of token1 withdrawn
+  timestamp: BigInt # Timestamp of the burn event
 }

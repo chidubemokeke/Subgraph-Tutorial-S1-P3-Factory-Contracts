@@ -13,6 +13,7 @@ function createJsonRpcClient(url) {
         path: url.pathname,
         // username may be empty
         auth: url.password ? `${url.username}:${url.password}` : undefined,
+        timeout: 120000, // 120 seconds
     };
     if (url.protocol === 'https:') {
         return jayson_1.default.Client.https(params);
