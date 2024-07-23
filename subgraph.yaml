@@ -44,7 +44,6 @@ templates:
       file: ./src/mappings/pool.ts
       entities:
         - Pool
-        - Token
         - Swap
         - Mint
         - Burn
