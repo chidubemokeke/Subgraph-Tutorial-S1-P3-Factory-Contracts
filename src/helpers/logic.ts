@@ -1,25 +1,28 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts"; // Import BigInt for large integers and Bytes for byte arrays.
-import { Pool } from "../../generated/schema"; // Import the Pool entity type from the generated schema.
+import { Address, BigInt } from "@graphprotocol/graph-ts"; // Import necessary types from the Graph protocol
+import { Pool } from "../../generated/schema"; // Import the Pool entity schema
+import { PoolCreated as PoolCreatedEvent } from "../../generated/UniswapV3Factory/UniswapV3Factory"; // Import the PoolCreated event schema
 
-// Function to create a new Pool entity with initial values
-export function createPoolEntity(poolId: string): void {
-  // Create a new Pool entity with the provided poolId
-  let pool = new Pool(poolId);
+// Helper function to initialize a Pool entity with default values
+export function initializePool(poolId: string, event: PoolCreatedEvent): Pool {
+  let pool = new Pool(poolId); // Create a new Pool entity with the given ID
 
-  // Initialize pool properties with default values
-  pool.totalLiquidityIn = BigInt.zero(); // Total liquidity added to the pool, initially zero
-  pool.totalLiquidityOut = BigInt.zero(); // Total liquidity removed from the pool, initially zero
-  pool.averageLiquidityIn = BigInt.zero(); // Average liquidity added per mint, initially zero
-  pool.averageLiquidityOut = BigInt.zero(); // Average liquidity removed per burn, initially zero
-  pool.totalLiquidity = BigInt.zero(); // Net liquidity in the pool, initially zero
-  pool.mintCount = 0; // Count of mint operations, initially zero
-  pool.burnCount = 0; // Count of burn operations, initially zero
-  pool.blockNumber = BigInt.zero(); // Block number of the latest event, initially zero
-  pool.timeStamp = BigInt.zero(); // Timestamp of the latest event, initially zero
-  pool.transactionHash = Bytes.empty(); // Transaction hash of the latest event, initially empty
+  // Initialize the Pool entity with details from the PoolCreated event
+  pool.token0 = event.params.token0; // Set the first token address
+  pool.token1 = event.params.token1; // Set the second token address
+  pool.fee = event.params.fee; // Set the fee tier for the pool
+  pool.tickSpacing = event.params.tickSpacing; // Set the tick spacing for the pool
+  pool.totalLiquidityIn = BigInt.zero(); // Initialize total liquidity added to the pool to zero
+  pool.totalLiquidityOut = BigInt.zero(); // Initialize total liquidity removed from the pool to zero
+  pool.averageLiquidityIn = BigInt.zero(); // Initialize average liquidity added to the pool to zero
+  pool.averageLiquidityOut = BigInt.zero(); // Initialize average liquidity removed from the pool to zero
+  pool.totalLiquidity = BigInt.zero(); // Initialize total liquidity in the pool to zero
+  pool.mintCount = 0; // Initialize the count of mint events to zero
+  pool.burnCount = 0; // Initialize the count of burn events to zero
+  pool.blockNumber = event.block.number; // Set the block number when the PoolCreated event occurred
+  pool.timeStamp = event.block.timestamp; // Set the timestamp when the PoolCreated event occurred
+  pool.transactionHash = event.transaction.hash; // Set the transaction hash for the PoolCreated event
 
-  // Save the newly created Pool entity to the store
-  pool.save();
+  return pool; // Return the newly initialized Pool entity
 }
 
 // Function to calculate average liquidity
@@ -43,17 +46,29 @@ export function updatePoolTotalLiquidity(
 ): void {
   // Load the Pool entity using the poolId
   let pool = Pool.load(poolId);
-
-  // If the Pool entity does not exist, create it
+  // If the Pool entity does not exist, create it with default values
   if (!pool) {
-    createPoolEntity(poolId); // Create a new Pool entity
-    pool = Pool.load(poolId); // Reload the Pool entity after creation
-    if (!pool) return; // If the Pool entity could not be loaded, exit the function
+    pool = new Pool(poolId);
+    // Initialize the Pool entity with details from the PoolCreated event
+    pool.token0 = pool.token0; // Set the first token address
+    pool.token1 = pool.token1; // Set the second token address
+    pool.fee = pool.fee; // Set the fee tier for the pool
+    pool.tickSpacing = pool.tickSpacing; // Set the tick spacing for the pool
+    pool.totalLiquidityIn = BigInt.zero(); // Initialize total liquidity added to the pool to zero
+    pool.totalLiquidityOut = BigInt.zero(); // Initialize total liquidity removed from the pool to zero
+    pool.averageLiquidityIn = BigInt.zero(); // Initialize average liquidity added to the pool to zero
+    pool.averageLiquidityOut = BigInt.zero(); // Initialize average liquidity removed from the pool to zero
+    pool.totalLiquidity = BigInt.zero(); // Initialize total liquidity in the pool to zero
+    pool.mintCount = 0; // Initialize the count of mint events to zero
+    pool.burnCount = 0; // Initialize the count of burn events to zero
+    pool.blockNumber = pool.blockNumber; // Set the block number when the PoolCreated event occurred
+    pool.timeStamp = pool.timeStamp; // Set the timestamp when the PoolCreated event occurred
+    pool.transactionHash = pool.transactionHash; // Set the transaction hash for the PoolCreated event
   }
 
-  // Initialize total liquidity values if they are not set
-  if (!pool.totalLiquidityIn) pool.totalLiquidityIn = BigInt.zero();
-  if (!pool.totalLiquidityOut) pool.totalLiquidityOut = BigInt.zero();
+  // Initialize total liquidity values if they are null
+  if (pool.totalLiquidityIn == null) pool.totalLiquidityIn = BigInt.zero();
+  if (pool.totalLiquidityOut == null) pool.totalLiquidityOut = BigInt.zero();
 
   // Update pool liquidity based on the type of operation
   if (isSwap) {

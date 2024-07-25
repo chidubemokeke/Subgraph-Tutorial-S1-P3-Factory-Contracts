@@ -43,7 +43,6 @@ templates:
       file: templates/UniswapV3Pool/UniswapV3Pool.wasm
       entities:
         - Pool
-        - Token
         - Swap
         - Mint
         - Burn
@@ -53,8 +52,6 @@ templates:
         - name: ERC20
           file: UniswapV3Pool/abis/ERC20.json
       eventHandlers:
-        - event: Initialize(uint160,int24)
-          handler: handleInitialize
         - event: Swap(indexed address,indexed address,int256,int256,uint160,uint128,int24)
           handler: handleSwap
         - event: Mint(address,indexed address,indexed int24,indexed int24,uint128,uint256,uint256)
