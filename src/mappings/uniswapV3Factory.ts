@@ -4,12 +4,12 @@ import { UniswapV3Pool } from "../../generated/templates"; // Import the Uniswap
 import { initializePool } from "../helpers/logic";
 // Mapping function to handle the PoolCreated event
 export function handlePoolCreated(event: PoolCreatedEvent): void {
+  // Create a new instance of the UniswapV3Pool template for tracking the new pool
+  UniswapV3Pool.create(Address.fromBytes(event.params.pool)); // Start tracking the new pool
+
   // Initialize a new Pool entity using the event data
   let pool = initializePool(event.params.pool.toHexString(), event);
 
   // Save the newly initialized Pool entity to the store
   pool.save();
-
-  // Create a new instance of the UniswapV3Pool template for tracking the new pool
-  UniswapV3Pool.create(Address.fromBytes(event.params.pool)); // Start tracking the new pool
 }
