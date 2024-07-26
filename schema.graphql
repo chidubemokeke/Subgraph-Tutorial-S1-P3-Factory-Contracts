@@ -3,9 +3,10 @@ type PoolCreated @entity(immutable: true) {
   id: Bytes! # Unique identifier for the PoolCreated event, often the transaction hash or a combination of event parameters
   token0: Bytes! # Address of the first token in the pool
   token1: Bytes! # Address of the second token in the pool
-  fee: Int! # Fee tier for the liquidity pool (e.g., 500 for 0.05%)
-  tickSpacing: Int! # Spacing between ticks in the pool, influences price granularity
+  fee: BigInt! # Fee tier for the liquidity pool (e.g., 500 for 0.05%)
+  tickSpacing: BigInt! # Spacing between ticks in the pool, influences price granularity
   pool: Bytes! # Address of the newly created pool contract
+  poolCount: BigInt! # Count of pools created
   blockNumber: BigInt! # Block number where the PoolCreated event was emitted
   blockTimestamp: BigInt! # Timestamp of the block where the event was emitted
   transactionHash: Bytes! # Transaction hash where the PoolCreated event was logged
@@ -15,21 +16,31 @@ type Pool @entity {
   id: ID! # Unique identifier for the pool (address)
   token0: Bytes! # Address of the first token in the pool
   token1: Bytes! # Address of the second token in the pool
-  fee: Int # Fee tier for the pool
-  tickSpacing: Int # Tick spacing for the pool
-  totalLiquidity: BigInt # Total liquidity in the pool
-  totalLiquidityIn: BigInt # Total liquidity added to the pool
-  totalLiquidityOut: BigInt # Total liquidity removed from the pool
-  averageLiquidityIn: BigInt # Average liquidity added to the pool
-  averageLiquidityOut: BigInt # Average liquidity removed from the pool
-  mintCount: Int # Number of mint events
-  burnCount: Int # Number of burn events
+  fee: BigInt! # Fee tier for the pool
+  tickSpacing: BigInt! # Tick spacing for the pool
+  totalLiquidity: BigInt! # Total liquidity in the pool
+  totalLiquidityIn: BigInt! # Total liquidity added to the pool
+  totalLiquidityOut: BigInt! # Total liquidity removed from the pool
+  averageLiquidityIn: BigInt! # Average liquidity added to the pool
+  averageLiquidityOut: BigInt! # Average liquidity removed from the pool
+  mintCount: BigInt! # Number of mint events
+  burnCount: BigInt! # Number of burn events
   blockNumber: BigInt!
   timeStamp: BigInt!
   transactionHash: Bytes!
+  activityCount: BigInt! # Total number of events = Swaps, Mints, Burns
   swaps: [Swap!]! @derivedFrom(field: "pool") # List of swaps involving this pool
   mints: [Mint!]! @derivedFrom(field: "pool") # List of mints involving this pool
   burns: [Burn!]! @derivedFrom(field: "pool") # List of burns involving this pool
+}
+
+type Token @entity {
+  id: ID! # token address
+  symbol: String! # token symbol
+  name: String! # token name
+  decimals: BigInt! # token decimals
+  totalSupply: BigInt! # token total supply
+  transferCount: BigInt! # Total number of times token has been transferred
 }
 
 # Entity to track swap events
@@ -51,8 +62,8 @@ type Mint @entity {
   pool: Pool! # Reference to the pool where the mint occurred
   sender: Bytes! # Address of the sender
   recipient: Bytes! # Address of the recipient
-  tickLower: Int! # Lower tick of the minted position
-  tickUpper: Int! # Upper tick of the minted position
+  tickLower: BigInt! # Lower tick of the minted position
+  tickUpper: BigInt! # Upper tick of the minted position
   amount: BigInt # Amount of liquidity minted
   amount0: BigInt # Amount of token0 deposited
   amount1: BigInt # Amount of token1 deposited
@@ -64,8 +75,8 @@ type Burn @entity {
   id: ID! # Unique identifier for the burn event (event hash + log index)
   pool: Pool! # Reference to the pool where the burn occurred
   sender: Bytes! # Address of the sender
-  tickLower: Int! # Lower tick of the burned position
-  tickUpper: Int! # Upper tick of the burned position
+  tickLower: BigInt! # Lower tick of the burned position
+  tickUpper: BigInt! # Upper tick of the burned position
   amount: BigInt # Amount of liquidity burned
   amount0: BigInt # Amount of token0 withdrawn
   amount1: BigInt # Amount of token1 withdrawn
