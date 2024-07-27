@@ -6,12 +6,13 @@ type Factory @entity {
   fee: Int! # Fee tier for the liquidity pool (e.g., 500 for 0.05%)
   tickSpacing: Int! # Spacing between ticks in the pool, influences price granularity
   pool: Bytes! # Address of the newly created pool contract
-  poolCount: BigInt! # Count of pools created
+  poolCount: BigInt! # Count of pools created by the factory
   blockNumber: BigInt! # Block number where the PoolCreated event was emitted
   blockTimestamp: BigInt! # Timestamp of the block where the event was emitted
   transactionHash: Bytes! # Transaction hash where the PoolCreated event was logged
 }
 
+# Represents a liquidity pool with various details and metrics
 type Pool @entity {
   id: ID! # Unique identifier for the pool (address)
   token0: Bytes! # Address of the first token in the pool
@@ -23,33 +24,34 @@ type Pool @entity {
   totalLiquidityOut: BigInt! # Total liquidity removed from the pool
   averageLiquidityIn: BigDecimal! # Average liquidity added to the pool
   averageLiquidityOut: BigDecimal! # Average liquidity removed from the pool
-  mintCount: BigInt!
-  burnCount: BigInt!
-  swapCount: BigInt!
-  token0MintCount: BigInt!
-  token0BurnCount: BigInt!
-  token0SwapCount: BigInt!
-  token1MintCount: BigInt!
-  token1BurnCount: BigInt!
-  token1SwapCount: BigInt!
-  token0TransferCount: BigInt!
-  token1TransferCount: BigInt!
+  mintCount: BigInt! # Count of mint events in the pool
+  burnCount: BigInt! # Count of burn events in the pool
+  swapCount: BigInt! # Count of swap events in the pool
+  token0MintCount: BigInt! # Count of mint events involving token0
+  token0BurnCount: BigInt! # Count of burn events involving token0
+  token0SwapCount: BigInt! # Count of swap events involving token0
+  token1MintCount: BigInt! # Count of mint events involving token1
+  token1BurnCount: BigInt! # Count of burn events involving token1
+  token1SwapCount: BigInt! # Count of swap events involving token1
+  token0TransferCount: BigInt! # Count of transfer events involving token0
+  token1TransferCount: BigInt! # Count of transfer events involving token1
   activityCount: BigInt! # Total number of events = Swaps, Mints, Burns
-  blockNumber: BigInt!
-  timeStamp: BigInt!
-  transactionHash: Bytes!
+  blockNumber: BigInt! # Block number where the last event involving the pool was emitted
+  timeStamp: BigInt! # Timestamp of the last event involving the pool
+  transactionHash: Bytes! # Transaction hash of the last event involving the pool
   swaps: [Swap!]! @derivedFrom(field: "pool") # List of swaps involving this pool
   mints: [Mint!]! @derivedFrom(field: "pool") # List of mints involving this pool
   burns: [Burn!]! @derivedFrom(field: "pool") # List of burns involving this pool
 }
 
+# Represents a token with its details
 type Token @entity {
-  id: ID! # token address
-  symbol: String! # token symbol
-  name: String! # token name
-  decimals: BigDecimal! # token decimals
-  totalSupply: BigInt! # token total supply
-  transferCount: BigInt! # Total number of times token has been transferred
+  id: ID! # Token address
+  symbol: String! # Token symbol
+  name: String! # Token name
+  decimals: BigDecimal! # Token decimals
+  totalSupply: BigInt! # Token total supply
+  transferCount: BigInt! # Total number of times the token has been transferred
 }
 
 # Entity to track swap events
