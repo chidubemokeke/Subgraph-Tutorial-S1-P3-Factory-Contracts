@@ -1,7 +1,7 @@
 import { Address } from "@graphprotocol/graph-ts"; // Import necessary types from the Graph protocol
 import { PoolCreated as PoolCreatedEvent } from "../../generated/UniswapV3Factory/UniswapV3Factory"; // Import the PoolCreated event schema
 import { UniswapV3Pool } from "../../generated/templates"; // Import the UniswapV3Pool template
-import { createPool } from "../helpers/logic";
+import { createPool } from "../helpers/factoryHelper";
 
 // Mapping function to handle the PoolCreated event
 export function handlePoolCreated(event: PoolCreatedEvent): void {
