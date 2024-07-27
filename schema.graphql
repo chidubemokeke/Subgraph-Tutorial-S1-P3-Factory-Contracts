@@ -1,5 +1,5 @@
 # Represents a newly created liquidity pool with initial details
-type Factory @entity(immutable: true) {
+type Factory @entity {
   id: Bytes! # Unique identifier for the PoolCreated event, often the transaction hash or a combination of event parameters
   token0: Bytes! # Address of the first token in the pool
   token1: Bytes! # Address of the second token in the pool
