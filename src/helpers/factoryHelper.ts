@@ -21,7 +21,7 @@ export function handleFactory(event: PoolCreatedEvent): void {
     factory.fee = event.params.fee;
     factory.tickSpacing = event.params.tickSpacing;
     factory.pool = event.params.pool;
-    factory.poolCount = BigInt.zero(); // Initialize with one pool
+    factory.poolCount = BigInt.fromI32(1); // Initialize with one pool
     factory.blockNumber = event.block.number;
     factory.blockTimestamp = event.block.timestamp;
     factory.transactionHash = event.transaction.hash;
