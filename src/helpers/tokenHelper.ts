@@ -1,13 +1,20 @@
-import { BigInt, Bytes, Address, log } from "@graphprotocol/graph-ts";
+import {
+  BigInt,
+  BigDecimal,
+  log,
+  Address as Bytes,
+  Address,
+} from "@graphprotocol/graph-ts";
 import { Pool, Token } from "../../generated/schema";
 import { ERC20 } from "../../generated/templates/UniswapV3Pool/ERC20";
 
 // Function to initialize a Token if it does not already exist and update its fields with actual data if available
 export function initializeToken(tokenAddress: Address): Token {
   let token = Token.load(tokenAddress.toHexString());
+
   if (!token) {
     token = new Token(tokenAddress.toHexString());
-    let tokenContract = ERC20.bind(tokenAddress); // Check this cast
+    let tokenContract = ERC20.bind(tokenAddress as Bytes);
 
     // Fetching symbol
     let symbolResult = tokenContract.try_symbol();
@@ -23,9 +30,10 @@ export function initializeToken(tokenAddress: Address): Token {
       log.debug("Unable to fetch decimals for token: {}", [
         tokenAddress.toHexString(),
       ]);
-      return token;
+      token.decimals = BigDecimal.fromString("18");
+    } else {
+      token.decimals = decimalsResult.value.toBigDecimal();
     }
-    token.decimals = decimalsResult.value.toBigDecimal();
 
     // Fetching total supply
     let totalSupplyResult = tokenContract.try_totalSupply();
@@ -39,8 +47,10 @@ export function initializeToken(tokenAddress: Address): Token {
     // Saving the token entity
     token.save();
   }
+
   return token;
 }
+
 export function updatePoolTransferCount(
   poolId: string,
   tokenAddress: Address

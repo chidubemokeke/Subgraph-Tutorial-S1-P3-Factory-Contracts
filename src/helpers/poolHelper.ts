@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Pool, Swap, Mint, Burn } from "../../generated/schema";
+import { Swap, Mint, Burn } from "../../generated/schema";
 import {
   Swap as SwapEvent,
   Mint as MintEvent,
