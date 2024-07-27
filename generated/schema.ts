@@ -78,30 +78,30 @@ export class Factory extends Entity {
     this.set("token1", Value.fromBytes(value));
   }
 
-  get fee(): BigInt {
+  get fee(): i32 {
     let value = this.get("fee");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set fee(value: BigInt) {
-    this.set("fee", Value.fromBigInt(value));
+  set fee(value: i32) {
+    this.set("fee", Value.fromI32(value));
   }
 
-  get tickSpacing(): BigInt {
+  get tickSpacing(): i32 {
     let value = this.get("tickSpacing");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set tickSpacing(value: BigInt) {
-    this.set("tickSpacing", Value.fromBigInt(value));
+  set tickSpacing(value: i32) {
+    this.set("tickSpacing", Value.fromI32(value));
   }
 
   get pool(): Bytes {
@@ -235,30 +235,30 @@ export class Pool extends Entity {
     this.set("token1", Value.fromBytes(value));
   }
 
-  get fee(): BigInt {
+  get fee(): i32 {
     let value = this.get("fee");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set fee(value: BigInt) {
-    this.set("fee", Value.fromBigInt(value));
+  set fee(value: i32) {
+    this.set("fee", Value.fromI32(value));
   }
 
-  get tickSpacing(): BigInt {
+  get tickSpacing(): i32 {
     let value = this.get("tickSpacing");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set tickSpacing(value: BigInt) {
-    this.set("tickSpacing", Value.fromBigInt(value));
+  set tickSpacing(value: i32) {
+    this.set("tickSpacing", Value.fromI32(value));
   }
 
   get totalLiquidity(): BigInt {
@@ -881,30 +881,30 @@ export class Mint extends Entity {
     this.set("recipient", Value.fromBytes(value));
   }
 
-  get tickLower(): BigInt {
+  get tickLower(): i32 {
     let value = this.get("tickLower");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set tickLower(value: BigInt) {
-    this.set("tickLower", Value.fromBigInt(value));
+  set tickLower(value: i32) {
+    this.set("tickLower", Value.fromI32(value));
   }
 
-  get tickUpper(): BigInt {
+  get tickUpper(): i32 {
     let value = this.get("tickUpper");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set tickUpper(value: BigInt) {
-    this.set("tickUpper", Value.fromBigInt(value));
+  set tickUpper(value: i32) {
+    this.set("tickUpper", Value.fromI32(value));
   }
 
   get amount(): BigInt | null {
@@ -1041,30 +1041,30 @@ export class Burn extends Entity {
     this.set("sender", Value.fromBytes(value));
   }
 
-  get tickLower(): BigInt {
+  get tickLower(): i32 {
     let value = this.get("tickLower");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set tickLower(value: BigInt) {
-    this.set("tickLower", Value.fromBigInt(value));
+  set tickLower(value: i32) {
+    this.set("tickLower", Value.fromI32(value));
   }
 
-  get tickUpper(): BigInt {
+  get tickUpper(): i32 {
     let value = this.get("tickUpper");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toBigInt();
+      return value.toI32();
     }
   }
 
-  set tickUpper(value: BigInt) {
-    this.set("tickUpper", Value.fromBigInt(value));
+  set tickUpper(value: i32) {
+    this.set("tickUpper", Value.fromI32(value));
   }
 
   get amount(): BigInt | null {

@@ -10,14 +10,14 @@ export function handleMint(event: MintEvent): void {
   handleMint(event);
 }
 
-// Event handler function for Swap events
-export function handleSwap(event: SwapEvent): void {
-  // Call the actual implementation of the Swap event handler
-  handleSwap(event);
-}
-
 // Event handler function for Burn events
 export function handleBurn(event: BurnEvent): void {
   // Call the actual implementation of the Burn event handler
   handleBurn(event);
+}
+
+// Event handler function for Swap events
+export function handleSwap(event: SwapEvent): void {
+  // Call the actual implementation of the Swap event handler
+  handleSwap(event);
 }

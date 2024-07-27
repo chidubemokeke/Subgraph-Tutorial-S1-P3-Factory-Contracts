@@ -254,6 +254,36 @@ export class ERC20 extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
+
+  name1(): Bytes {
+    let result = super.call("name", "name():(bytes32)", []);
+
+    return result[0].toBytes();
+  }
+
+  try_name1(): ethereum.CallResult<Bytes> {
+    let result = super.tryCall("name", "name():(bytes32)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
+  symbol1(): Bytes {
+    let result = super.call("symbol", "symbol():(bytes32)", []);
+
+    return result[0].toBytes();
+  }
+
+  try_symbol1(): ethereum.CallResult<Bytes> {
+    let result = super.tryCall("symbol", "symbol():(bytes32)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
 }
 
 export class ApproveCall extends ethereum.Call {
