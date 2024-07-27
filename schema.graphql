@@ -1,5 +1,5 @@
 # Represents a newly created liquidity pool with initial details
-type PoolCreated @entity(immutable: true) {
+type Factory @entity(immutable: true) {
   id: Bytes! # Unique identifier for the PoolCreated event, often the transaction hash or a combination of event parameters
   token0: Bytes! # Address of the first token in the pool
   token1: Bytes! # Address of the second token in the pool
@@ -21,14 +21,23 @@ type Pool @entity {
   totalLiquidity: BigInt! # Total liquidity in the pool
   totalLiquidityIn: BigInt! # Total liquidity added to the pool
   totalLiquidityOut: BigInt! # Total liquidity removed from the pool
-  averageLiquidityIn: BigInt! # Average liquidity added to the pool
-  averageLiquidityOut: BigInt! # Average liquidity removed from the pool
-  mintCount: BigInt! # Number of mint events
-  burnCount: BigInt! # Number of burn events
+  averageLiquidityIn: BigDecimal! # Average liquidity added to the pool
+  averageLiquidityOut: BigDecimal! # Average liquidity removed from the pool
+  mintCount: BigInt!
+  burnCount: BigInt!
+  swapCount: BigInt!
+  token0MintCount: BigInt!
+  token0BurnCount: BigInt!
+  token0SwapCount: BigInt!
+  token1MintCount: BigInt!
+  token1BurnCount: BigInt!
+  token1SwapCount: BigInt!
+  token0TransferCount: BigInt!
+  token1TransferCount: BigInt!
+  activityCount: BigInt! # Total number of events = Swaps, Mints, Burns
   blockNumber: BigInt!
   timeStamp: BigInt!
   transactionHash: Bytes!
-  activityCount: BigInt! # Total number of events = Swaps, Mints, Burns
   swaps: [Swap!]! @derivedFrom(field: "pool") # List of swaps involving this pool
   mints: [Mint!]! @derivedFrom(field: "pool") # List of mints involving this pool
   burns: [Burn!]! @derivedFrom(field: "pool") # List of burns involving this pool
@@ -38,7 +47,7 @@ type Token @entity {
   id: ID! # token address
   symbol: String! # token symbol
   name: String! # token name
-  decimals: BigInt! # token decimals
+  decimals: BigDecimal! # token decimals
   totalSupply: BigInt! # token total supply
   transferCount: BigInt! # Total number of times token has been transferred
 }

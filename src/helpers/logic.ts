@@ -1,32 +1,46 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts"; // Import necessary types from the Graph protocol
-import { Pool, Token, PoolCreated } from "../../generated/schema"; // Import the Pool entity schema
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  log,
+} from "@graphprotocol/graph-ts"; // Import necessary types from the Graph protocol
+import { Pool, Token, Factory } from "../../generated/schema"; // Import the Pool entity schema
 import { PoolCreated as PoolCreatedEvent } from "../../generated/UniswapV3Factory/UniswapV3Factory"; // Import the PoolCreated event schema
+import { ERC20 } from "../../generated/templates/UniswapV3Pool/ERC20";
 
 // Helper function to initialize a PoolCreated entity with default values
-export function handlePoolCreated(event: PoolCreatedEvent): void {
-  let poolCreated = new PoolCreated(event.transaction.hash); // Use the transaction hash or other unique identifier
+export function createPool(event: PoolCreatedEvent): void {
+  let factory = Factory.load(event.transaction.hash); // Use the transaction hash or other unique identifier
 
-  poolCreated.token0 = event.params.token0;
-  poolCreated.token1 = event.params.token1;
-  poolCreated.fee = BigInt.fromI32(event.params.fee);
-  poolCreated.tickSpacing = BigInt.fromI32(event.params.tickSpacing);
-  poolCreated.pool = event.params.pool; // Address of the newly created pool contract
-  poolCreated.poolCount = BigInt.fromI32(1); // Initialize poolCount, modify as needed for total count
-  poolCreated.blockNumber = event.block.number;
-  poolCreated.blockTimestamp = event.block.timestamp;
-  poolCreated.transactionHash = event.transaction.hash;
+  if (!factory) {
+    factory = new Factory(event.transaction.hash);
+    factory.token0 = event.params.token0;
+    factory.token1 = event.params.token1;
+    factory.fee = BigInt.fromI32(event.params.fee);
+    factory.tickSpacing = BigInt.fromI32(event.params.tickSpacing);
+    factory.pool = event.params.pool; // Address of the newly created pool contract
+    factory.poolCount = BigInt.fromI32(1); // Initialize poolCount, modify as needed for total count
+    factory.blockNumber = event.block.number;
+    factory.blockTimestamp = event.block.timestamp;
+    factory.transactionHash = event.transaction.hash;
 
-  // Save the PoolCreated entity
-  poolCreated.save();
+    // Save the Factory entity
+    factory.save();
+  } else {
+    factory.poolCount = factory.poolCount.plus(BigInt.fromI32(1));
+    factory.save();
+  }
 
-  // Also handle the Pool entity creation/update
-  let pool = initializePool(event.params.pool.toHexString(), event);
+  // Handle the Pool entity creation/update
+  const pool = initializePool(event.params.pool.toHexString(), event);
   pool.save();
 }
 
 // Helper function to initialize a Pool entity with default values
+
 export function initializePool(poolId: string, event: PoolCreatedEvent): Pool {
-  let pool = new Pool(poolId);
+  const pool = new Pool(poolId);
 
   pool.token0 = event.params.token0;
   pool.token1 = event.params.token1;
@@ -34,11 +48,20 @@ export function initializePool(poolId: string, event: PoolCreatedEvent): Pool {
   pool.tickSpacing = BigInt.fromI32(event.params.tickSpacing);
   pool.totalLiquidityIn = BigInt.zero();
   pool.totalLiquidityOut = BigInt.zero();
-  pool.averageLiquidityIn = BigInt.zero();
-  pool.averageLiquidityOut = BigInt.zero();
+  pool.averageLiquidityIn = BigDecimal.zero();
+  pool.averageLiquidityOut = BigDecimal.zero();
   pool.totalLiquidity = BigInt.zero();
   pool.mintCount = BigInt.zero();
   pool.burnCount = BigInt.zero();
+  pool.swapCount = BigInt.zero();
+  pool.token0MintCount = BigInt.zero();
+  pool.token0BurnCount = BigInt.zero();
+  pool.token0SwapCount = BigInt.zero();
+  pool.token1MintCount = BigInt.zero();
+  pool.token1BurnCount = BigInt.zero();
+  pool.token1SwapCount = BigInt.zero();
+  pool.token0TransferCount = BigInt.zero();
+  pool.token1TransferCount = BigInt.zero();
   pool.activityCount = BigInt.zero(); // Initialize activityCount
   pool.blockNumber = event.block.number;
   pool.timeStamp = event.block.timestamp;
@@ -51,15 +74,33 @@ export function initializePool(poolId: string, event: PoolCreatedEvent): Pool {
   return pool;
 }
 
-// Initialize a Token if it does not already exist
-function initializeToken(tokenAddress: Bytes): void {
+// Function to initialize a Token if it does not already exist and update its fields with actual data if available
+export function initializeToken(tokenAddress: Bytes): void {
   let token = Token.load(tokenAddress.toHexString());
-  if (token == null) {
+  if (!token) {
     token = new Token(tokenAddress.toHexString());
-    token.symbol = ""; // Default value
-    token.name = ""; // Default value
-    token.decimals = BigInt.zero(); // Default value
-    token.totalSupply = BigInt.zero(); // Default value
+    let tokenContract = ERC20.bind(tokenAddress as Address);
+
+    // Attempt to get token details from the contract
+    let symbolResult = tokenContract.try_symbol();
+    let nameResult = tokenContract.try_name();
+    let decimalsResult = tokenContract.try_decimals();
+    let totalSupplyResult = tokenContract.try_totalSupply();
+
+    token.symbol = symbolResult.reverted ? "" : symbolResult.value;
+    token.name = nameResult.reverted ? "" : nameResult.value;
+
+    if (decimalsResult.reverted) {
+      log.debug("Unable to fetch decimals for token: {}", [
+        tokenAddress.toHexString(),
+      ]);
+      return;
+    }
+
+    token.decimals = decimalsResult.value.toBigDecimal(); // Convert BigInt to BigDecimal
+    token.totalSupply = totalSupplyResult.reverted
+      ? BigInt.zero()
+      : totalSupplyResult.value;
     token.transferCount = BigInt.zero(); // Initialize
     token.save();
   }
@@ -69,49 +110,41 @@ function initializeToken(tokenAddress: Bytes): void {
 export function calculateAverageLiquidity(
   totalLiquidity: BigInt,
   count: BigInt
-): BigInt {
-  if (count.isZero()) return BigInt.zero();
-  return totalLiquidity.div(count);
+): BigDecimal {
+  if (count.equals(BigInt.fromI32(0))) {
+    return BigDecimal.zero();
+  }
+  return totalLiquidity.toBigDecimal().div(count.toBigDecimal());
 }
 
 // Function to update the total liquidity of a pool
 export function updatePoolTotalLiquidity(
   poolId: string,
   amount: BigInt,
-  isMint: boolean,
+  tokenAddress: Bytes,
+  isMint: boolean = false,
+  isBurn: boolean = false,
   isSwap: boolean = false
 ): void {
   let pool = Pool.load(poolId);
   if (!pool) {
-    // Default values for initialization in case of missing Pool entity
-    pool = new Pool(poolId);
-    pool.token0 = Bytes.empty();
-    pool.token1 = Bytes.empty();
-    pool.fee = pool.fee;
-    pool.tickSpacing = pool.tickSpacing;
-    pool.totalLiquidityIn = BigInt.zero();
-    pool.totalLiquidityOut = BigInt.zero();
-    pool.averageLiquidityIn = BigInt.zero();
-    pool.averageLiquidityOut = BigInt.zero();
-    pool.totalLiquidity = BigInt.zero();
-    pool.mintCount = BigInt.zero();
-    pool.burnCount = BigInt.zero();
-    pool.activityCount = BigInt.zero();
-    pool.blockNumber = BigInt.zero(); // Default value
-    pool.timeStamp = BigInt.zero(); // Default value
-    pool.transactionHash = Bytes.empty(); // Default value
+    return;
   }
 
-  // Initialize total liquidity values if they are null
-  if (pool.totalLiquidityIn == null) pool.totalLiquidityIn = BigInt.zero();
-  if (pool.totalLiquidityOut == null) pool.totalLiquidityOut = BigInt.zero();
-  if (pool.mintCount == null) pool.mintCount = BigInt.zero();
-  if (pool.burnCount == null) pool.burnCount = BigInt.zero();
-  if (pool.activityCount == null) pool.activityCount = BigInt.zero();
-
+  // Handle swap operation
   if (isSwap) {
     pool.totalLiquidityIn = pool.totalLiquidityIn.plus(amount);
     pool.totalLiquidityOut = pool.totalLiquidityOut.plus(amount);
+    pool.swapCount = pool.swapCount.plus(BigInt.fromI32(1));
+
+    // Update swap count for token0 or token1
+    if (tokenAddress.equals(pool.token0)) {
+      pool.token0SwapCount = pool.token0SwapCount.plus(BigInt.fromI32(1));
+    } else if (tokenAddress.equals(pool.token1)) {
+      pool.token1SwapCount = pool.token1SwapCount.plus(BigInt.fromI32(1));
+    }
+
+    // Handle mint operation
   } else if (isMint) {
     pool.totalLiquidityIn = pool.totalLiquidityIn.plus(amount);
     pool.mintCount = pool.mintCount.plus(BigInt.fromI32(1));
@@ -119,28 +152,68 @@ export function updatePoolTotalLiquidity(
       pool.totalLiquidityIn,
       pool.mintCount
     );
-  } else {
+
+    // Update mint count for token0 or token1
+    if (tokenAddress.equals(pool.token0)) {
+      pool.token0MintCount = pool.token0MintCount.plus(BigInt.fromI32(1));
+    } else if (tokenAddress.equals(pool.token1)) {
+      pool.token1MintCount = pool.token1MintCount.plus(BigInt.fromI32(1));
+    }
+
+    // Handle burn operation
+  } else if (isBurn) {
     pool.totalLiquidityOut = pool.totalLiquidityOut.plus(amount);
     pool.burnCount = pool.burnCount.plus(BigInt.fromI32(1));
     pool.averageLiquidityOut = calculateAverageLiquidity(
       pool.totalLiquidityOut,
       pool.burnCount
     );
+
+    // Update burn count for token0 or token1
+    if (tokenAddress.equals(pool.token0)) {
+      pool.token0BurnCount = pool.token0BurnCount.plus(BigInt.fromI32(1));
+    } else if (tokenAddress.equals(pool.token1)) {
+      pool.token1BurnCount = pool.token1BurnCount.plus(BigInt.fromI32(1));
+    }
+  }
+
+  // Update general pool activity
+  pool.activityCount = pool.activityCount.plus(BigInt.fromI32(1));
+
+  // Recalculate total liquidity
+  pool.totalLiquidity = pool.totalLiquidityIn.minus(pool.totalLiquidityOut);
+
+  // Save the updated pool entity
+  pool.save();
+}
+
+export function updatePoolTransferCount(
+  poolId: string,
+  tokenAddress: Bytes
+): void {
+  let pool = Pool.load(poolId);
+  if (!pool) {
+    return;
+  }
+
+  if (tokenAddress.equals(pool.token0)) {
+    pool.token0TransferCount = pool.token0TransferCount.plus(BigInt.fromI32(1));
+  } else if (tokenAddress.equals(pool.token1)) {
+    pool.token1TransferCount = pool.token1TransferCount.plus(BigInt.fromI32(1));
   }
 
   pool.activityCount = pool.activityCount.plus(BigInt.fromI32(1));
-  pool.totalLiquidity = pool.totalLiquidityIn.minus(pool.totalLiquidityOut);
   pool.save();
 }
 
 // Function to update the total transfers of a token
 export function updateTokenTransferCount(tokenAddress: Bytes): void {
   let token = Token.load(tokenAddress.toHexString());
-  if (!token) {
+  if (token == null) {
     token = new Token(tokenAddress.toHexString());
     token.symbol = ""; // Default value
     token.name = ""; // Default value
-    token.decimals = BigInt.zero(); // Default value
+    token.decimals = BigDecimal.zero(); // Default value
     token.totalSupply = BigInt.zero(); // Default value
     token.transferCount = BigInt.fromI32(1); // Initialize transferCount
     token.save();
