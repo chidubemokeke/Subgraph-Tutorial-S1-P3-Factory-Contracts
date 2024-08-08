@@ -1,4 +1,4 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, Address } from "@graphprotocol/graph-ts";
 import { Pool, Swap, Mint, Burn } from "../../generated/schema";
 import {
   Swap as SwapEvent,
@@ -49,8 +49,9 @@ export function handleMint(event: MintEvent): void {
   );
 
   // Update transfer counts for token0 and token1
-  updatePoolTransferCount(poolId, pool.token0);
-  updatePoolTransferCount(poolId, pool.token1);
+  // Convert Bytes to Address before calling updatePoolTransferCount
+  updatePoolTransferCount(poolId, Address.fromBytes(pool.token0));
+  updatePoolTransferCount(poolId, Address.fromBytes(pool.token1));
 
   // Update token-specific mint counts
   if (pool.token0.equals(event.params.sender)) {
@@ -102,9 +103,9 @@ export function handleBurn(event: BurnEvent): void {
   );
 
   // Update transfer counts for token0 and token1
-  updatePoolTransferCount(poolId, pool.token0);
-  updatePoolTransferCount(poolId, pool.token1);
-
+  // Convert Bytes to Address before calling updatePoolTransferCount
+  updatePoolTransferCount(poolId, Address.fromBytes(pool.token0));
+  updatePoolTransferCount(poolId, Address.fromBytes(pool.token1));
   // Update token-specific burn counts
   if (pool.token0.equals(event.params.owner)) {
     pool.token0BurnCount = pool.token0BurnCount.plus(BigInt.fromI32(1));
@@ -163,8 +164,9 @@ export function handleSwap(event: SwapEvent): void {
   );
 
   // Update transfer counts for token0 and token1
-  updatePoolTransferCount(poolId, pool.token0);
-  updatePoolTransferCount(poolId, pool.token1);
+  // Convert Bytes to Address before calling updatePoolTransferCount
+  updatePoolTransferCount(poolId, Address.fromBytes(pool.token0));
+  updatePoolTransferCount(poolId, Address.fromBytes(pool.token1));
 
   // Update the swap counts for tokens in the pool
   if (pool.token0.equals(event.params.sender)) {

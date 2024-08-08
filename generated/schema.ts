@@ -717,89 +717,69 @@ export class Swap extends Entity {
     this.set("recipient", Value.fromBytes(value));
   }
 
-  get amount0In(): BigInt | null {
+  get amount0In(): BigInt {
     let value = this.get("amount0In");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount0In(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount0In");
-    } else {
-      this.set("amount0In", Value.fromBigInt(<BigInt>value));
-    }
+  set amount0In(value: BigInt) {
+    this.set("amount0In", Value.fromBigInt(value));
   }
 
-  get amount1In(): BigInt | null {
+  get amount1In(): BigInt {
     let value = this.get("amount1In");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount1In(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount1In");
-    } else {
-      this.set("amount1In", Value.fromBigInt(<BigInt>value));
-    }
+  set amount1In(value: BigInt) {
+    this.set("amount1In", Value.fromBigInt(value));
   }
 
-  get amount0Out(): BigInt | null {
+  get amount0Out(): BigInt {
     let value = this.get("amount0Out");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount0Out(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount0Out");
-    } else {
-      this.set("amount0Out", Value.fromBigInt(<BigInt>value));
-    }
+  set amount0Out(value: BigInt) {
+    this.set("amount0Out", Value.fromBigInt(value));
   }
 
-  get amount1Out(): BigInt | null {
+  get amount1Out(): BigInt {
     let value = this.get("amount1Out");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount1Out(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount1Out");
-    } else {
-      this.set("amount1Out", Value.fromBigInt(<BigInt>value));
-    }
+  set amount1Out(value: BigInt) {
+    this.set("amount1Out", Value.fromBigInt(value));
   }
 
-  get timestamp(): BigInt | null {
+  get timestamp(): BigInt {
     let value = this.get("timestamp");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set timestamp(value: BigInt | null) {
-    if (!value) {
-      this.unset("timestamp");
-    } else {
-      this.set("timestamp", Value.fromBigInt(<BigInt>value));
-    }
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
   }
 }
 
@@ -907,72 +887,56 @@ export class Mint extends Entity {
     this.set("tickUpper", Value.fromI32(value));
   }
 
-  get amount(): BigInt | null {
+  get amount(): BigInt {
     let value = this.get("amount");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount");
-    } else {
-      this.set("amount", Value.fromBigInt(<BigInt>value));
-    }
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 
-  get amount0(): BigInt | null {
+  get amount0(): BigInt {
     let value = this.get("amount0");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount0(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount0");
-    } else {
-      this.set("amount0", Value.fromBigInt(<BigInt>value));
-    }
+  set amount0(value: BigInt) {
+    this.set("amount0", Value.fromBigInt(value));
   }
 
-  get amount1(): BigInt | null {
+  get amount1(): BigInt {
     let value = this.get("amount1");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount1(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount1");
-    } else {
-      this.set("amount1", Value.fromBigInt(<BigInt>value));
-    }
+  set amount1(value: BigInt) {
+    this.set("amount1", Value.fromBigInt(value));
   }
 
-  get timestamp(): BigInt | null {
+  get timestamp(): BigInt {
     let value = this.get("timestamp");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set timestamp(value: BigInt | null) {
-    if (!value) {
-      this.unset("timestamp");
-    } else {
-      this.set("timestamp", Value.fromBigInt(<BigInt>value));
-    }
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
   }
 }
 
@@ -1067,72 +1031,56 @@ export class Burn extends Entity {
     this.set("tickUpper", Value.fromI32(value));
   }
 
-  get amount(): BigInt | null {
+  get amount(): BigInt {
     let value = this.get("amount");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount");
-    } else {
-      this.set("amount", Value.fromBigInt(<BigInt>value));
-    }
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 
-  get amount0(): BigInt | null {
+  get amount0(): BigInt {
     let value = this.get("amount0");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount0(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount0");
-    } else {
-      this.set("amount0", Value.fromBigInt(<BigInt>value));
-    }
+  set amount0(value: BigInt) {
+    this.set("amount0", Value.fromBigInt(value));
   }
 
-  get amount1(): BigInt | null {
+  get amount1(): BigInt {
     let value = this.get("amount1");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set amount1(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount1");
-    } else {
-      this.set("amount1", Value.fromBigInt(<BigInt>value));
-    }
+  set amount1(value: BigInt) {
+    this.set("amount1", Value.fromBigInt(value));
   }
 
-  get timestamp(): BigInt | null {
+  get timestamp(): BigInt {
     let value = this.get("timestamp");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBigInt();
     }
   }
 
-  set timestamp(value: BigInt | null) {
-    if (!value) {
-      this.unset("timestamp");
-    } else {
-      this.set("timestamp", Value.fromBigInt(<BigInt>value));
-    }
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
   }
 }
 

@@ -60,11 +60,11 @@ type Swap @entity {
   pool: Pool! # Reference to the pool where the swap occurred
   sender: Bytes! # Address of the sender
   recipient: Bytes! # Address of the recipient
-  amount0In: BigInt # Amount of token0 sent to the pool
-  amount1In: BigInt # Amount of token1 sent to the pool
-  amount0Out: BigInt # Amount of token0 sent from the pool
-  amount1Out: BigInt # Amount of token1 sent from the pool
-  timestamp: BigInt # Timestamp of the swap event
+  amount0In: BigInt! # Amount of token0 sent to the pool
+  amount1In: BigInt! # Amount of token1 sent to the pool
+  amount0Out: BigInt! # Amount of token0 sent from the pool
+  amount1Out: BigInt! # Amount of token1 sent from the pool
+  timestamp: BigInt! # Timestamp of the swap event
 }
 
 # Entity to track mint events
@@ -75,10 +75,10 @@ type Mint @entity {
   recipient: Bytes! # Address of the recipient
   tickLower: Int! # Lower tick of the minted position
   tickUpper: Int! # Upper tick of the minted position
-  amount: BigInt # Amount of liquidity minted
-  amount0: BigInt # Amount of token0 deposited
-  amount1: BigInt # Amount of token1 deposited
-  timestamp: BigInt # Timestamp of the mint event
+  amount: BigInt! # Amount of liquidity minted
+  amount0: BigInt! # Amount of token0 deposited
+  amount1: BigInt! # Amount of token1 deposited
+  timestamp: BigInt! # Timestamp of the mint event
 }
 
 # Entity to track burn events
@@ -88,8 +88,8 @@ type Burn @entity {
   sender: Bytes! # Address of the sender
   tickLower: Int! # Lower tick of the burned position
   tickUpper: Int! # Upper tick of the burned position
-  amount: BigInt # Amount of liquidity burned
-  amount0: BigInt # Amount of token0 withdrawn
-  amount1: BigInt # Amount of token1 withdrawn
-  timestamp: BigInt # Timestamp of the burn event
+  amount: BigInt! # Amount of liquidity burned
+  amount0: BigInt! # Amount of token0 withdrawn
+  amount1: BigInt! # Amount of token1 withdrawn
+  timestamp: BigInt! # Timestamp of the burn event
 }
