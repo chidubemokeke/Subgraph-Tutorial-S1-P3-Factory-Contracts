@@ -45,11 +45,11 @@ export function CreatePool(event: PoolCreatedEvent): void {
     pool.token1 = event.params.token1; // Set the second token address
     pool.fee = event.params.fee; // Set the fee tier for the pool
     pool.tickSpacing = event.params.tickSpacing; // Set the tick spacing for the pool
-    pool.totalLiquidityIn = BigInt.zero(); // Initialize total liquidity added to zero
-    pool.totalLiquidityOut = BigInt.zero(); // Initialize total liquidity removed to zero
-    pool.averageLiquidityIn = BigInt.zero().toBigDecimal(); // Initialize average liquidity added to zero
-    pool.averageLiquidityOut = BigInt.zero().toBigDecimal(); // Initialize average liquidity removed to zero
-    pool.totalLiquidity = BigInt.zero(); // Initialize total liquidity to zero
+    pool.totalLiquidityIn = BigDecimal.fromString("0");
+    pool.totalLiquidityOut = BigDecimal.fromString("0");
+    pool.averageLiquidityIn = BigDecimal.fromString("0");
+    pool.averageLiquidityOut = BigDecimal.fromString("0");
+    pool.totalLiquidity = BigDecimal.fromString("0");
     pool.mintCount = BigInt.zero(); // Initialize mint count to zero
     pool.burnCount = BigInt.zero(); // Initialize burn count to zero
     pool.swapCount = BigInt.zero(); // Initialize swap count to zero
@@ -74,10 +74,28 @@ export function CreatePool(event: PoolCreatedEvent): void {
   initializeToken(event.params.token1);
 }
 
+// Helper function to convert BigInt to BigDecimal
+export function bigIntToBigDecimal(value: BigInt): BigDecimal {
+  return BigDecimal.fromString(value.toString());
+}
+
+// Function to calculate average liquidity
+export function calculateAverageLiquidity(
+  total: BigDecimal,
+  count: BigInt
+): BigDecimal {
+  return count.equals(BigInt.zero())
+    ? BigDecimal.zero()
+    : total.div(BigDecimal.fromString(count.toString()));
+}
+
 // Function to update the total liquidity of a pool based on the event type
 export function updatePoolTotalLiquidity(
   poolId: string, // The ID of the pool being updated
-  amount: BigInt, // The amount of liquidity being added or removed
+  amount0In: BigInt = BigInt.zero(), // Amount of token0 added or removed
+  amount1In: BigInt = BigInt.zero(), // Amount of token1 added or removed
+  amount0Out: BigInt = BigInt.zero(), // Amount of token0 removed or added
+  amount1Out: BigInt = BigInt.zero(), // Amount of token1 removed or added
   isMint: Bytes = Bytes.empty(), // Default to empty Bytes if not used; indicates a mint event
   isBurn: Bytes = Bytes.empty(), // Default to empty Bytes if not used; indicates a burn event
   isSwap: Bytes = Bytes.empty() // Default to empty Bytes if not used; indicates a swap event
@@ -85,24 +103,33 @@ export function updatePoolTotalLiquidity(
   let pool = Pool.load(poolId); // Load the Pool entity with the given ID
 
   if (!pool) {
-    // Check if the Pool entity exists
     log.warning("Pool entity not found for ID: {}", [poolId]); // Log a warning if the pool is not found
     return; // Exit the function if the pool is not found
   }
 
   log.info("Updating pool total liquidity for pool: {}", [poolId]); // Log an info message for updating liquidity
 
+  // Convert BigInt to BigDecimal for precise calculations
+  let amount0InDecimal = bigIntToBigDecimal(amount0In);
+  let amount1InDecimal = bigIntToBigDecimal(amount1In);
+  let amount0OutDecimal = bigIntToBigDecimal(amount0Out);
+  let amount1OutDecimal = bigIntToBigDecimal(amount1Out);
+
   if (!isSwap.equals(Bytes.empty())) {
     // Check if the event is a swap event
-    // Update liquidity for a swap event
-    pool.totalLiquidityIn = pool.totalLiquidityIn.plus(amount); // Increase total liquidity added
-    pool.totalLiquidityOut = pool.totalLiquidityOut.plus(amount); // Increase total liquidity removed
+    pool.totalLiquidityIn = pool.totalLiquidityIn
+      .plus(amount0InDecimal)
+      .plus(amount1InDecimal); // Increase total liquidity added
+    pool.totalLiquidityOut = pool.totalLiquidityOut
+      .plus(amount0OutDecimal)
+      .plus(amount1OutDecimal); // Increase total liquidity removed
     pool.swapCount = pool.swapCount.plus(BigInt.fromI32(1)); // Increment the swap count
     log.info("Processed swap event for pool: {}", [poolId]); // Log an info message for processing swap event
   } else if (!isMint.equals(Bytes.empty())) {
     // Check if the event is a mint event
-    // Update liquidity for a mint event
-    pool.totalLiquidityIn = pool.totalLiquidityIn.plus(amount); // Increase total liquidity added
+    pool.totalLiquidityIn = pool.totalLiquidityIn
+      .plus(amount0InDecimal)
+      .plus(amount1InDecimal); // Increase total liquidity added
     pool.mintCount = pool.mintCount.plus(BigInt.fromI32(1)); // Increment the mint count
     pool.averageLiquidityIn = calculateAverageLiquidity(
       pool.totalLiquidityIn, // Calculate average liquidity added
@@ -111,8 +138,9 @@ export function updatePoolTotalLiquidity(
     log.info("Processed mint event for pool: {}", [poolId]); // Log an info message for processing mint event
   } else if (!isBurn.equals(Bytes.empty())) {
     // Check if the event is a burn event
-    // Update liquidity for a burn event
-    pool.totalLiquidityOut = pool.totalLiquidityOut.plus(amount); // Increase total liquidity removed
+    pool.totalLiquidityOut = pool.totalLiquidityOut
+      .plus(amount0OutDecimal)
+      .plus(amount1OutDecimal); // Increase total liquidity removed
     pool.burnCount = pool.burnCount.plus(BigInt.fromI32(1)); // Increment the burn count
     pool.averageLiquidityOut = calculateAverageLiquidity(
       pool.totalLiquidityOut, // Calculate average liquidity removed
@@ -128,7 +156,7 @@ export function updatePoolTotalLiquidity(
 }
 
 // Function to calculate the average liquidity
-export function calculateAverageLiquidity(
+/**export function calculateAverageLiquidity(
   totalLiquidity: BigInt, // The total liquidity added or removed
   count: BigInt // The count of events (mint or burn)
 ): BigDecimal {
@@ -137,4 +165,4 @@ export function calculateAverageLiquidity(
     return BigDecimal.zero(); // Return zero if the count is zero
   }
   return totalLiquidity.toBigDecimal().div(count.toBigDecimal()); // Calculate the average liquidity
-}
+}**/

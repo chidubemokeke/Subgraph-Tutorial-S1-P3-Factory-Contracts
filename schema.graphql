@@ -19,9 +19,9 @@ type Pool @entity {
   token1: Bytes! # Address of the second token in the pool
   fee: Int! # Fee tier for the pool
   tickSpacing: Int! # Tick spacing for the pool
-  totalLiquidity: BigInt! # Total liquidity in the pool
-  totalLiquidityIn: BigInt! # Total liquidity added to the pool
-  totalLiquidityOut: BigInt! # Total liquidity removed from the pool
+  totalLiquidity: BigDecimal! # Total liquidity in the pool
+  totalLiquidityIn: BigDecimal! # Total liquidity added to the pool
+  totalLiquidityOut: BigDecimal! # Total liquidity removed from the pool
   averageLiquidityIn: BigDecimal! # Average liquidity added to the pool
   averageLiquidityOut: BigDecimal! # Average liquidity removed from the pool
   mintCount: BigInt! # Count of mint events in the pool

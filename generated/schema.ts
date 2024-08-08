@@ -261,43 +261,43 @@ export class Pool extends Entity {
     this.set("tickSpacing", Value.fromI32(value));
   }
 
-  get totalLiquidity(): BigInt {
+  get totalLiquidity(): BigDecimal {
     let value = this.get("totalLiquidity");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set totalLiquidity(value: BigInt) {
-    this.set("totalLiquidity", Value.fromBigInt(value));
+  set totalLiquidity(value: BigDecimal) {
+    this.set("totalLiquidity", Value.fromBigDecimal(value));
   }
 
-  get totalLiquidityIn(): BigInt {
+  get totalLiquidityIn(): BigDecimal {
     let value = this.get("totalLiquidityIn");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set totalLiquidityIn(value: BigInt) {
-    this.set("totalLiquidityIn", Value.fromBigInt(value));
+  set totalLiquidityIn(value: BigDecimal) {
+    this.set("totalLiquidityIn", Value.fromBigDecimal(value));
   }
 
-  get totalLiquidityOut(): BigInt {
+  get totalLiquidityOut(): BigDecimal {
     let value = this.get("totalLiquidityOut");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set totalLiquidityOut(value: BigInt) {
-    this.set("totalLiquidityOut", Value.fromBigInt(value));
+  set totalLiquidityOut(value: BigDecimal) {
+    this.set("totalLiquidityOut", Value.fromBigDecimal(value));
   }
 
   get averageLiquidityIn(): BigDecimal {
